@@ -1,15 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { CtaBand } from "@/components/site/CtaBand";
-import { PageHero } from "@/components/site/PageHero";
 import { ProjectCard } from "@/components/site/ProjectCard";
-import { projectCategories, projects } from "@/data/projects";
+import { Reveal } from "@/components/site/Reveal";
+import { projects } from "@/data/projects";
 
-const title = "Portfolio — Blumebyte Projects & Results";
+const title = "Portfolio — Blumebyte Products & Projects";
 const description =
-  "Selected Blumebyte projects across dashboards, e-commerce, mobile apps, hosting and HR rollouts, with the results they delivered.";
+  "Explore Blumebyte HR, ProSME, Ghost Tears and Space Bob — digital products and interactive software built by Blumebyte.";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -18,57 +18,44 @@ export const Route = createFileRoute("/portfolio")({
       { name: "description", content: description },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/portfolio" },
     ],
-    links: [{ rel: "canonical", href: "/portfolio" }],
   }),
   component: Portfolio,
 });
 
 function Portfolio() {
-  const [category, setCategory] = useState<string>("All");
-  const filtered =
-    category === "All" ? projects : projects.filter((p) => p.category === category);
-
   return (
     <>
-      <PageHero
-        eyebrow="Portfolio"
-        title="Work that made operations measurably better"
-        description="A selection of projects and the outcomes they produced. Client names are placeholders you can replace with real references."
-      >
-        <Button asChild variant="hero" size="lg">
-          <Link to="/contact">Start a project</Link>
-        </Button>
-      </PageHero>
-
-      <section className="container-page py-16 lg:py-20">
-        <div className="flex flex-wrap gap-2">
-          {["All", ...projectCategories].map((c) => (
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              aria-pressed={category === c}
-              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                category === c
-                  ? "border-primary/40 bg-accent text-primary"
-                  : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-primary"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
+      <section className="bg-black text-white">
+        <div className="container-page section-shell grid gap-10 lg:grid-cols-[1fr_.9fr] lg:items-end">
+          <Reveal>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d5b16b]">Portfolio</p>
+            <h1 className="mt-5 max-w-4xl text-5xl font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-6xl lg:text-8xl">
+              Products built to make technology useful.
+            </h1>
+          </Reveal>
+          <Reveal delay={100}>
+            <p className="max-w-xl text-base leading-8 text-white/64 sm:text-lg">
+              From business software to mobile games, these are Blumebyte products and experiments we can show publicly today.
+            </p>
+            <Button asChild variant="hero" size="lg" className="mt-7 rounded-full">
+              <Link to="/contact">Start a project <ArrowRight /></Link>
+            </Button>
+          </Reveal>
         </div>
+      </section>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((p) => (
-            <ProjectCard key={p.title} project={p} />
+      <section className="container-page section-shell">
+        <div className="grid gap-7 md:grid-cols-2">
+          {projects.map((project, index) => (
+            <Reveal key={project.slug} delay={(index % 2) * 80}>
+              <ProjectCard project={project} />
+            </Reveal>
           ))}
         </div>
       </section>
 
-      <CtaBand title="Have a project in mind?" />
+      <CtaBand title="Have a product, platform or digital idea to build?" />
     </>
   );
 }
