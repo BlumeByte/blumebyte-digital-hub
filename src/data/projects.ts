@@ -1,67 +1,56 @@
 export type Project = {
+  slug: "blumebyte-hr" | "prosme" | "ghost-tears" | "space-bob";
   title: string;
-  client: string;
   category: string;
   summary: string;
-  result: string;
   tags: string[];
+  internalPath: "/blumebyte-hr" | "/projects/prosme" | "/projects/ghost-tears" | "/projects/space-bob";
+  externalUrl?: string;
+  playStoreUrl?: string;
 };
 
 export const projects: Project[] = [
   {
-    title: "Operations Dashboard for a Logistics Firm",
-    client: "Regional logistics operator",
-    category: "Dashboards",
+    slug: "blumebyte-hr",
+    title: "Blumebyte HR",
+    category: "HR Technology",
     summary:
-      "Replaced daily spreadsheet reporting with a live dashboard covering fleet status, deliveries and driver performance.",
-    result: "Daily reporting time cut from 3 hours to under 15 minutes.",
-    tags: ["Web App", "Data", "Operations"],
+      "A people-management platform designed to bring employee records, leave, attendance and core HR workflows into one practical digital workspace.",
+    tags: ["HR", "Web Platform", "Workflow"],
+    internalPath: "/blumebyte-hr",
+    externalUrl: "https://hr.blumebyte.com",
   },
   {
-    title: "E-commerce Store for a Retail Brand",
-    client: "Consumer goods retailer",
-    category: "E-commerce",
+    slug: "prosme",
+    title: "ProSME",
+    category: "SME Platform",
     summary:
-      "Built an online store with mobile money and card payments, delivery zones and stock management for two branches.",
-    result: "Online orders grew to 28% of total sales in six months.",
-    tags: ["E-commerce", "Payments", "Mobile"],
+      "A Blumebyte-built platform focused on helping small and growing businesses strengthen digital presence, discovery and access to practical business tools.",
+    tags: ["SME", "Platform", "Android"],
+    internalPath: "/projects/prosme",
+    externalUrl: "https://prosme.blumebyte.com",
+    playStoreUrl: "https://play.google.com/apps/testing/com.blumebyte.prosme",
   },
   {
-    title: "HR Platform Rollout for an NGO",
-    client: "Non-profit organisation, 140 staff",
-    category: "Blumebyte HR",
+    slug: "ghost-tears",
+    title: "Ghost Tears",
+    category: "Mobile Game",
     summary:
-      "Deployed Blumebyte HR for employee records, leave approvals and attendance across three field offices.",
-    result: "Leave approval turnaround reduced from 5 days to same day.",
-    tags: ["HR", "Workflow", "Rollout"],
+      "A Blumebyte game project developed as part of the company's experimentation with interactive mobile experiences and game development.",
+    tags: ["Game", "Android", "Interactive"],
+    internalPath: "/projects/ghost-tears",
+    playStoreUrl: "https://play.google.com/apps/testing/com.blumebyte.spacebob",
   },
   {
-    title: "Corporate Website & Hosting Migration",
-    client: "Professional services firm",
-    category: "Web Design",
+    slug: "space-bob",
+    title: "Space Bob",
+    category: "Mobile Game",
     summary:
-      "Redesigned a dated corporate site and migrated hosting and email to a managed, monitored environment.",
-    result: "Page load improved by 62%; zero unplanned downtime since launch.",
-    tags: ["Website", "Hosting", "SEO"],
-  },
-  {
-    title: "Field Data Mobile App",
-    client: "Agri-business cooperative",
-    category: "Mobile Apps",
-    summary:
-      "Offline-first Android app for field officers to record farmer data and sync when connectivity returns.",
-    result: "Data collection errors down 74% versus paper forms.",
-    tags: ["Android", "Offline", "Data"],
-  },
-  {
-    title: "Productivity Suite Setup for a School Group",
-    client: "Private education group",
-    category: "SmartSuite",
-    summary:
-      "Configured shared document management, staff communication and approval workflows across four campuses.",
-    result: "Internal approvals standardised across all campuses in 8 weeks.",
-    tags: ["SmartSuite", "Training", "Process"],
+      "A published Android game from Blumebyte, representing the company's mobile game development and consumer-product work.",
+    tags: ["Game", "Android", "Google Play"],
+    internalPath: "/projects/space-bob",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.blumebyte.spacebob",
   },
 ];
 
-export const projectCategories = Array.from(new Set(projects.map((p) => p.category)));
+export const projectCategories = Array.from(new Set(projects.map((project) => project.category)));
