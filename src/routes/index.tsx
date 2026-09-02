@@ -1,19 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, Youtube } from "lucide-react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
-import heroImage from "@/assets/hero-abstract.jpg";
-import hrImage from "@/assets/hr-dashboard.jpg";
 import { Button } from "@/components/ui/button";
-import { CtaBand } from "@/components/site/CtaBand";
 import { FaqList } from "@/components/site/FaqList";
+import { LiquidGlassPanel } from "@/components/site/LiquidGlassPanel";
 import { PostCard } from "@/components/site/PostCard";
-import { ProjectCard } from "@/components/site/ProjectCard";
+import { ProductUniverseSection } from "@/components/site/ProductUniverseSection";
 import { Reveal } from "@/components/site/Reveal";
+import { ThreeCtaBand } from "@/components/site/ThreeCtaBand";
+import { ShaderField } from "@/components/three/ShaderField";
+import { ThreeExperience } from "@/components/three/ThreeExperience";
 import { siteConfig } from "@/config/site";
 import { faqs } from "@/data/faqs";
 import { posts } from "@/data/posts";
-import { projects } from "@/data/projects";
 import { services } from "@/data/services";
+
+const HeroScene = lazy(() =>
+  import("@/components/three/HeroScene").then((module) => ({ default: module.HeroScene })),
+);
 
 const title = "Blumebyte — Technology & Digital Solutions";
 const description =
@@ -32,45 +37,159 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const serviceSpans = [
+  "md:col-span-7 xl:col-span-7",
+  "md:col-span-5 xl:col-span-5",
+  "md:col-span-5 xl:col-span-5",
+  "md:col-span-7 xl:col-span-7",
+  "md:col-span-7 xl:col-span-7",
+  "md:col-span-5 xl:col-span-5",
+  "md:col-span-12 xl:col-span-12",
+] as const;
+
+function ImmersiveHero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const update = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const travel = Math.max(rect.height, 1);
+      const value = Math.min(1, Math.max(0, -rect.top / travel));
+      setProgress(value);
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  const fallback = <div className="three-fallback absolute inset-0" aria-hidden="true" />;
+
+  return (
+    <section ref={sectionRef} className="relative isolate min-h-[88svh] overflow-hidden bg-black text-white">
+      <div className="absolute inset-0" aria-hidden="true">
+        <Suspense fallback={fallback}>
+          <ThreeExperience fallback={fallback} className="absolute inset-0 h-full w-full" camera={{ position: [0, 0, 5], fov: 42 }}>
+            <HeroScene progress={progress} />
+          </ThreeExperience>
+        </Suspense>
+      </div>
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#000_4%,rgba(0,0,0,.9)_38%,rgba(0,0,0,.28)_72%,rgba(0,0,0,.15)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,#000_0%,transparent_34%,rgba(0,0,0,.18)_100%)]" />
+
+      <div className="container-page relative z-10 flex min-h-[88svh] items-end py-16 lg:py-24">
+        <div className="grid w-full gap-12 lg:grid-cols-[1.22fr_.78fr] lg:items-end">
+          <Reveal>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#d5b16b]">
+              Digital systems · Software · Interactive products
+            </p>
+            <h1 className="mt-6 max-w-5xl text-5xl font-semibold leading-[0.91] tracking-[-0.065em] text-white sm:text-7xl lg:text-[6.6rem]">
+              Technology that feels simpler and works harder.
+            </h1>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <p className="max-w-lg text-base leading-8 text-white/68 sm:text-lg">
+              Blumebyte designs and builds practical digital systems—from websites and dashboards to apps, hosting, e-commerce and business software.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild variant="hero" size="xl" className="rounded-full">
+                <Link to="/portfolio">View our work <ArrowRight /></Link>
+              </Button>
+              <Button asChild variant="outline" size="xl" className="rounded-full border-white/25 bg-transparent text-white hover:bg-white hover:text-black">
+                <Link to="/services">Explore services</Link>
+              </Button>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ShaderTransition({ light = false }: { light?: boolean }) {
+  const fallback = <div className={`absolute inset-0 ${light ? "bg-[radial-gradient(circle_at_65%_34%,rgba(124,90,26,.24),transparent_28%),linear-gradient(135deg,#111,#f1f1f1)]" : "shader-static"}`} aria-hidden="true" />;
+
+  return (
+    <div className={`relative h-36 overflow-hidden sm:h-52 ${light ? "bg-[#f1f1f1]" : "bg-black"}`} aria-hidden="true">
+      <ThreeExperience fallback={fallback} className="absolute inset-0 h-full w-full" camera={{ position: [0, 0, 3], fov: 40 }}>
+        <ShaderField variant={light ? "light-gold" : "dark-gold"} progress={light ? 0.8 : 0.2} />
+      </ThreeExperience>
+    </div>
+  );
+}
+
+function GlassSystems() {
+  return (
+    <section className="relative overflow-hidden bg-[#080808] text-white">
+      <div className="spatial-grid pointer-events-none absolute inset-0 opacity-55" aria-hidden="true" />
+      <div className="pointer-events-none absolute left-[60%] top-0 h-[34rem] w-[34rem] rounded-full bg-[#7C5A1A]/16 blur-[110px]" aria-hidden="true" />
+
+      <div className="container-page section-shell relative">
+        <div className="grid gap-8 lg:grid-cols-[.7fr_1.3fr] lg:items-end">
+          <Reveal>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d5b16b]">Glass systems</p>
+            <h2 className="mt-5 max-w-xl text-4xl font-semibold leading-[.98] tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
+              Technology services arranged around the work that needs to move.
+            </h2>
+          </Reveal>
+          <Reveal delay={80}>
+            <p className="max-w-2xl text-base leading-8 text-white/60 lg:ml-auto">
+              Seven focused capabilities spanning software, infrastructure, operations and commerce. The visual layer is fluid; the service itself stays practical and clear.
+            </p>
+          </Reveal>
+        </div>
+
+        <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-12 lg:gap-5">
+          {services.map((service, index) => {
+            const Icon = service.icon;
+            const emphasized = index === 0 || index === 3 || index === 6;
+            return (
+              <Reveal key={service.slug} className={serviceSpans[index]} delay={(index % 3) * 60}>
+                <LiquidGlassPanel emphasis={emphasized} className="h-full rounded-[1.8rem] p-6 sm:p-8">
+                  <div className="relative z-10 flex h-full min-h-64 flex-col justify-between gap-10">
+                    <div className="flex items-start justify-between gap-6">
+                      <span className="grid size-11 place-items-center rounded-full border border-white/14 bg-black/20 text-[#d5b16b]">
+                        <Icon className="size-5" aria-hidden="true" />
+                      </span>
+                      <span className="text-xs font-semibold tracking-[0.18em] text-white/35">{String(index + 1).padStart(2, "0")}</span>
+                    </div>
+                    <div>
+                      <h3 className="max-w-xl text-2xl font-semibold tracking-[-0.045em] text-white sm:text-3xl">{service.title}</h3>
+                      <p className="mt-3 max-w-2xl text-sm leading-7 text-white/58">{service.description}</p>
+                    </div>
+                  </div>
+                </LiquidGlassPanel>
+              </Reveal>
+            );
+          })}
+        </div>
+
+        <Reveal className="mt-10">
+          <Button asChild variant="outline" size="lg" className="rounded-full border-white/20 bg-transparent text-white hover:bg-white hover:text-black">
+            <Link to="/services">Explore all services <ArrowRight /></Link>
+          </Button>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 function Home() {
   return (
     <>
-      <section className="relative overflow-hidden bg-black text-white">
-        <div className="absolute inset-0 opacity-45" aria-hidden="true">
-          <img src={heroImage} alt="" className="h-full w-full object-cover object-center mix-blend-luminosity" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#000_5%,rgba(0,0,0,.88)_42%,rgba(0,0,0,.25)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_20%,rgba(124,90,26,.4),transparent_34%)]" />
-        </div>
-
-        <div className="container-page relative flex min-h-[78vh] items-end py-16 sm:min-h-[82vh] lg:py-24">
-          <div className="grid w-full gap-12 lg:grid-cols-[1.25fr_.75fr] lg:items-end">
-            <Reveal>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#d5b16b]">Digital products · Software · Technology</p>
-              <h1 className="mt-6 max-w-5xl text-5xl font-semibold leading-[0.91] tracking-[-0.065em] text-white sm:text-7xl lg:text-[6.6rem]">
-                Technology that feels simpler and works harder.
-              </h1>
-            </Reveal>
-
-            <Reveal delay={120}>
-              <p className="max-w-lg text-base leading-8 text-white/66 sm:text-lg">
-                Blumebyte designs and builds practical digital systems—from websites and dashboards to apps, hosting, e-commerce and business software.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild variant="hero" size="xl" className="rounded-full">
-                  <Link to="/portfolio">View our work <ArrowRight /></Link>
-                </Button>
-                <Button asChild variant="outline" size="xl" className="rounded-full border-white/25 bg-transparent text-white hover:bg-white hover:text-black">
-                  <Link to="/services">Explore services</Link>
-                </Button>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
+      <ImmersiveHero />
 
       <section className="container-page section-shell">
         <Reveal>
-          <div className="grid gap-8 border-y border-black/10 py-10 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
+          <div className="grid gap-8 border-y border-black/10 py-12 lg:grid-cols-[.72fr_1.28fr] lg:items-center">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">What Blumebyte does</p>
             <p className="max-w-4xl text-2xl font-medium leading-tight tracking-[-0.04em] text-foreground sm:text-3xl lg:text-4xl">
               We turn business needs into clear digital experiences, useful software and technology people can actually operate.
@@ -79,79 +198,24 @@ function Home() {
         </Reveal>
       </section>
 
-      <section className="container-page pb-8 lg:pb-16">
-        <Reveal>
-          <div className="grid gap-10 lg:grid-cols-[.65fr_1.35fr]">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Services</p>
-              <h2 className="mt-4 text-4xl font-semibold tracking-[-0.055em] sm:text-5xl">Built around the work your business needs done.</h2>
-              <Button asChild variant="outline" className="mt-7 rounded-full">
-                <Link to="/services">View all services <ArrowRight /></Link>
-              </Button>
-            </div>
+      <GlassSystems />
+      <ShaderTransition />
+      <ProductUniverseSection />
+      <ShaderTransition light />
 
-            <div className="border-t border-black/10">
-              {services.map((service, index) => (
-                <div key={service.slug} className="grid gap-3 border-b border-black/10 py-7 sm:grid-cols-[3.5rem_1fr]">
-                  <span className="text-xs font-semibold text-primary">{String(index + 1).padStart(2, "0")}</span>
-                  <div>
-                    <h3 className="text-xl font-semibold tracking-[-0.035em] sm:text-2xl">{service.title}</h3>
-                    <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">{service.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      <section className="section-shell bg-[#f1f1f1]">
-        <div className="container-page grid gap-12 lg:grid-cols-[.85fr_1.15fr] lg:items-center">
+      <section className="bg-white">
+        <div className="container-page section-shell">
           <Reveal>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Featured product</p>
-            <h2 className="mt-5 max-w-xl text-4xl font-semibold leading-[1] tracking-[-0.055em] sm:text-5xl">Blumebyte HR keeps people operations in one practical workspace.</h2>
-            <p className="mt-6 max-w-xl text-base leading-8 text-muted-foreground">
-              Employee records, leave, attendance and core HR workflows designed for growing organisations that want a simpler way to manage everyday people operations.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild variant="hero" size="lg" className="rounded-full">
-                <Link to="/blumebyte-hr">Explore Blumebyte HR <ArrowRight /></Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="rounded-full">
-                <a href={siteConfig.products.hr} target="_blank" rel="noreferrer">Visit platform <ArrowUpRight /></a>
-              </Button>
+            <div className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:items-end">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Editorial reset</p>
+                <h2 className="mt-5 text-4xl font-semibold tracking-[-0.055em] sm:text-5xl">Ideas stay easier to understand when the interface gets quieter.</h2>
+              </div>
+              <p className="max-w-2xl text-base leading-8 text-muted-foreground lg:ml-auto">
+                After the product experience, the site returns to a calmer reading rhythm for videos, insights and practical answers.
+              </p>
             </div>
           </Reveal>
-
-          <Reveal delay={100} className="media-mask" >
-            <img
-              src={hrImage}
-              alt="Blumebyte HR dashboard interface"
-              loading="lazy"
-              width={1264}
-              height={848}
-              className="w-full rounded-3xl border border-black/10 shadow-lift"
-            />
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="container-page section-shell">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <Reveal>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Selected products</p>
-            <h2 className="mt-4 max-w-3xl text-4xl font-semibold tracking-[-0.055em] sm:text-5xl">Software, platforms and interactive products from Blumebyte.</h2>
-          </Reveal>
-          <Button asChild variant="outline" className="rounded-full">
-            <Link to="/portfolio">Portfolio <ArrowRight /></Link>
-          </Button>
-        </div>
-        <div className="mt-12 grid gap-7 md:grid-cols-2">
-          {projects.map((project, index) => (
-            <Reveal key={project.slug} delay={(index % 2) * 80}>
-              <ProjectCard project={project} />
-            </Reveal>
-          ))}
         </div>
       </section>
 
@@ -209,7 +273,7 @@ function Home() {
         </div>
       </section>
 
-      <CtaBand title="Have something useful to build?" />
+      <ThreeCtaBand />
     </>
   );
 }
