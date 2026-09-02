@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -35,6 +35,8 @@ const portfolioNav = [
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const darkHeader = pathname === "/";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -43,15 +45,20 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navLinkClass =
-    "px-2.5 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground";
+  const navLinkClass = darkHeader
+    ? "px-2.5 py-2 text-[13px] font-medium text-white/68 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C5A1A] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+    : "px-2.5 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C5A1A] focus-visible:ring-offset-2";
 
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        scrolled
-          ? "border-b border-black/10 bg-white/92 shadow-[0_10px_30px_-24px_rgba(0,0,0,.45)] backdrop-blur-xl"
-          : "border-b border-transparent bg-white/95"
+        darkHeader
+          ? scrolled
+            ? "border-b border-white/10 bg-black/82 shadow-[0_12px_36px_-24px_rgba(0,0,0,.8)] backdrop-blur-xl"
+            : "border-b border-transparent bg-black/16 backdrop-blur-sm"
+          : scrolled
+            ? "border-b border-black/10 bg-white/92 shadow-[0_10px_30px_-24px_rgba(0,0,0,.45)] backdrop-blur-xl"
+            : "border-b border-transparent bg-white/95"
       }`}
     >
       <div
@@ -59,7 +66,7 @@ export function Header() {
           scrolled ? "h-15" : "h-18"
         }`}
       >
-        <Logo />
+        <Logo inverse={darkHeader} />
 
         <nav aria-label="Main navigation" className="hidden items-center gap-1 xl:flex">
           {primaryNav.map((item) => (
@@ -68,24 +75,30 @@ export function Header() {
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
               className={navLinkClass}
-              activeProps={{ className: "text-foreground" }}
+              activeProps={{ className: darkHeader ? "text-white" : "text-foreground" }}
             >
               {item.label}
             </Link>
           ))}
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 px-2.5 py-2 text-[13px] font-medium text-muted-foreground outline-none transition-colors hover:text-foreground data-[state=open]:text-foreground">
+            <DropdownMenuTrigger
+              className={`flex items-center gap-1 px-2.5 py-2 text-[13px] font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#7C5A1A] ${
+                darkHeader
+                  ? "text-white/68 hover:text-white data-[state=open]:text-white"
+                  : "text-muted-foreground hover:text-foreground data-[state=open]:text-foreground"
+              }`}
+            >
               Portfolio <ChevronDown className="size-3.5" aria-hidden="true" />
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
               sideOffset={12}
-              className="w-56 rounded-xl border-black/10 p-1.5 shadow-xl"
+              className="w-56 rounded-xl border-black/10 bg-white p-1.5 text-black shadow-xl"
             >
               {portfolioNav.map((item) => (
                 <DropdownMenuItem key={item.to} asChild>
-                  <Link to={item.to} className="rounded-lg py-2.5">
+                  <Link to={item.to} className="rounded-lg py-2.5 focus-visible:outline-none">
                     {item.label}
                   </Link>
                 </DropdownMenuItem>
@@ -98,7 +111,7 @@ export function Header() {
               key={item.to}
               to={item.to}
               className={navLinkClass}
-              activeProps={{ className: "text-foreground" }}
+              activeProps={{ className: darkHeader ? "text-white" : "text-foreground" }}
             >
               {item.label}
             </Link>
@@ -113,7 +126,12 @@ export function Header() {
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild className="xl:hidden">
-            <Button variant="outline" size="icon" aria-label="Open navigation menu" className="rounded-full">
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Open navigation menu"
+              className={`rounded-full ${darkHeader ? "border-white/20 bg-white/5 text-white hover:bg-white/12 hover:text-white" : ""}`}
+            >
               <Menu aria-hidden="true" />
             </Button>
           </SheetTrigger>
@@ -129,23 +147,21 @@ export function Header() {
                   to={item.to}
                   activeOptions={{ exact: item.to === "/" }}
                   onClick={() => setOpen(false)}
-                  className="border-b border-black/10 py-4 text-lg font-semibold tracking-tight text-foreground"
+                  className="border-b border-black/10 py-4 text-lg font-semibold tracking-tight text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C5A1A]"
                 >
                   {item.label}
                 </Link>
               ))}
 
               <div className="border-b border-black/10 py-4">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-                  Portfolio
-                </p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">Portfolio</p>
                 <div className="flex flex-col">
                   {portfolioNav.map((item) => (
                     <Link
                       key={item.to}
                       to={item.to}
                       onClick={() => setOpen(false)}
-                      className="py-2.5 text-base font-medium text-foreground/80 transition-colors hover:text-primary"
+                      className="py-2.5 text-base font-medium text-foreground/80 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C5A1A]"
                     >
                       {item.label}
                     </Link>
@@ -158,7 +174,7 @@ export function Header() {
                   key={item.to}
                   to={item.to}
                   onClick={() => setOpen(false)}
-                  className="border-b border-black/10 py-4 text-lg font-semibold tracking-tight text-foreground"
+                  className="border-b border-black/10 py-4 text-lg font-semibold tracking-tight text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C5A1A]"
                 >
                   {item.label}
                 </Link>
