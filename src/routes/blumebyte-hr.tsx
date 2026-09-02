@@ -32,7 +32,7 @@ export const Route = createFileRoute("/blumebyte-hr")({
     ],
     links: [{ rel: "canonical", href: "/blumebyte-hr" }],
   }),
-  component: BlumebyteHR;
+  component: BlumebyteHR,
 });
 
 const features = [
@@ -118,45 +118,31 @@ function BlumebyteHR() {
                 "Organisations with 10–200 employees",
                 "HR teams working across spreadsheets and chat",
                 "NGOs and schools with multiple sites",
-                "Growing businesses formalising HR processes",
-              ].map((i) => (
-                <li key={i} className="flex items-start gap-2.5 text-base text-foreground">
-                  <CheckCircle2 className="mt-1 size-4 shrink-0 text-primary" />
-                  {i}
+                "Growing businesses that need structure without enterprise complexity",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-foreground">
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+                  {item}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-            <h2 className="text-2xl font-bold">Getting started</h2>
-            <ol className="mt-6 space-y-5">
-              {[
-                { t: "Demo", b: "A 30-minute walkthrough using examples from your organisation." },
-                { t: "Setup", b: "We import your employee data and configure leave policies." },
-                { t: "Rollout", b: "Staff onboarding, manager training and go-live support." },
-              ].map((s, i) => (
-                <li key={s.t} className="flex gap-4">
-                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-gradient-brand text-sm font-semibold text-primary-foreground">
-                    {i + 1}
-                  </span>
-                  <span>
-                    <span className="block font-semibold">{s.t}</span>
-                    <span className="block text-sm text-muted-foreground">{s.b}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-            <Button asChild variant="hero" size="lg" className="mt-8 w-full">
-              <Link to="/contact">Request a demo</Link>
+          <div>
+            <h2 className="text-3xl font-bold">Built to stay practical</h2>
+            <p className="mt-6 text-base leading-relaxed text-muted-foreground">
+              Blumebyte HR focuses on the workflows teams use every day, with simple interfaces,
+              clear permissions and room to grow as your organisation adds people and processes.
+            </p>
+            <Button asChild variant="outline" size="lg" className="mt-7">
+              <a href="https://hr.blumebyte.com" target="_blank" rel="noopener noreferrer">
+                Visit hr.blumebyte.com <ArrowRight />
+              </a>
             </Button>
           </div>
         </div>
       </section>
 
-      <CtaBand
-        title="See Blumebyte HR in action"
-        description="Book a short demo and we'll show you how leave, attendance and records work with your own team structure."
-      />
+      <CtaBand title="Ready to simplify your HR operations?" />
     </>
   );
 }
