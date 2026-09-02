@@ -5,36 +5,45 @@ import { Button } from "@/components/ui/button";
 import { whatsappLink } from "@/config/site";
 
 export function CtaBand({
-  title = "Ready to work smarter with technology?",
-  description = "Tell us what you're trying to improve. We'll suggest a practical, realistic next step — no obligation.",
+  title = "Ready to build something useful?",
+  description = "Tell Blumebyte what you want to improve, launch or simplify. We’ll use the context to shape a practical next step.",
 }: {
   title?: string;
   description?: string;
 }) {
   return (
-    <section className="container-page py-16 lg:py-24">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-brand px-6 py-14 text-center shadow-lift sm:px-12">
-        <div className="relative mx-auto max-w-2xl">
-          <h2 className="text-3xl font-bold text-primary-foreground sm:text-4xl">{title}</h2>
-          <p className="mt-4 text-base leading-relaxed text-primary-foreground/85 sm:text-lg">
-            {description}
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild size="xl" variant="secondary">
-              <Link to="/contact">
-                Get Started <ArrowRight />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="xl"
-              variant="outline"
-              className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
-            >
-              <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                <MessageCircle /> Chat on WhatsApp
-              </a>
-            </Button>
+    <section className="container-page section-shell">
+      <div className="relative overflow-hidden rounded-[2rem] bg-black px-6 py-14 text-white sm:px-10 lg:px-14 lg:py-18">
+        <div
+          className="pointer-events-none absolute right-[-8%] top-[-55%] size-72 rounded-full bg-[#7c5a1a]/35 blur-3xl sm:size-96"
+          aria-hidden="true"
+        />
+        <div className="relative grid gap-9 lg:grid-cols-[1.2fr_.8fr] lg:items-end">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d5b16b]">Start a conversation</p>
+            <h2 className="mt-5 max-w-3xl text-4xl font-semibold leading-[0.98] tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
+              {title}
+            </h2>
+          </div>
+          <div>
+            <p className="max-w-xl text-base leading-8 text-white/62">{description}</p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button asChild size="lg" variant="hero" className="rounded-full">
+                <Link to="/contact">
+                  Start an enquiry <ArrowRight />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="rounded-full border-white/25 bg-transparent text-white hover:bg-white hover:text-black"
+              >
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle /> WhatsApp
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
