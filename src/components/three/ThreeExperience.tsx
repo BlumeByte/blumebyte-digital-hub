@@ -1,5 +1,5 @@
 import { Canvas, type CanvasProps } from "@react-three/fiber";
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import { Component, type ErrorInfo, type ReactNode, useEffect, useRef, useState } from "react";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useWebGLCapability } from "@/hooks/useWebGLCapability";
@@ -39,20 +39,38 @@ export function ThreeExperience({ children, fallback, className, camera }: Three
   const reducedMotion = useReducedMotion();
   const webgl = useWebGLCapability();
   const live = shouldRenderLive3D({ webgl, reducedMotion });
+  const hostRef = useRef<HTMLDivElement>(null);
+  const [nearViewport, setNearViewport] = useState(false);
 
-  if (!live) return <>{fallback}</>;
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setNearViewport(Boolean(entry?.isIntersecting)),
+      { rootMargin: "260px 0px", threshold: 0 },
+    );
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, []);
+
+  const renderCanvas = live && nearViewport;
 
   return (
-    <SceneErrorBoundary fallback={fallback}>
-      <div className={className} aria-hidden="true">
-        <Canvas
-          dpr={[1, 1.5]}
-          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-          camera={camera ?? { position: [0, 0, 5], fov: 42 }}
-        >
-          {children}
-        </Canvas>
-      </div>
-    </SceneErrorBoundary>
+    <div ref={hostRef} className={className} aria-hidden="true">
+      {renderCanvas ? (
+        <SceneErrorBoundary fallback={fallback}>
+          <Canvas
+            dpr={[1, 1.35]}
+            gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+            camera={camera ?? { position: [0, 0, 5], fov: 42 }}
+          >
+            {children}
+          </Canvas>
+        </SceneErrorBoundary>
+      ) : (
+        fallback
+      )}
+    </div>
   );
 }
