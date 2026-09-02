@@ -8,14 +8,12 @@ export function Logo({ footer = false, inverse = false }: { footer?: boolean; in
       aria-label="Blumebyte home"
     >
       <img
-        src="/favicon.ico"
-        width={36}
-        height={36}
+        src="/blumebyte-official-mark.jpg"
+        width={40}
+        height={40}
         alt=""
         aria-hidden="true"
-        className={`size-9 rounded-lg object-contain transition-transform duration-300 group-hover:scale-[1.03] ${
-          inverse ? "ring-1 ring-white/20" : ""
-        }`}
+        className="size-10 shrink-0 object-contain transition-transform duration-300 group-hover:scale-[1.03]"
       />
       <span
         className={`font-display text-lg font-bold tracking-[-0.04em] ${
