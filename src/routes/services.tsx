@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { CtaBand } from "@/components/site/CtaBand";
-import { PageHero } from "@/components/site/PageHero";
+import { Reveal } from "@/components/site/Reveal";
 import { services } from "@/data/services";
 
 const title = "Services — Web, Hosting, Apps, E-commerce & More | Blumebyte";
@@ -17,10 +17,7 @@ export const Route = createFileRoute("/services")({
       { name: "description", content: description },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/services" },
     ],
-    links: [{ rel: "canonical", href: "/services" }],
   }),
   component: Services,
 });
@@ -28,84 +25,97 @@ export const Route = createFileRoute("/services")({
 function Services() {
   return (
     <>
-      <PageHero
-        eyebrow="Services"
-        title="Digital solutions built around your operations"
-        description="Seven service areas covering the practical technology needs of growing businesses — delivered, documented and supported by one team."
-      >
-        <Button asChild variant="hero" size="lg">
-          <Link to="/contact">Request a quote</Link>
-        </Button>
-      </PageHero>
+      <section className="bg-black text-white">
+        <div className="container-page section-shell grid gap-12 lg:grid-cols-[1fr_.9fr] lg:items-end">
+          <Reveal>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d5b16b]">Services</p>
+            <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-6xl lg:text-8xl">
+              Digital capability, without unnecessary complexity.
+            </h1>
+          </Reveal>
+          <Reveal delay={100}>
+            <p className="max-w-xl text-base leading-8 text-white/64 sm:text-lg">
+              Blumebyte combines design, development, infrastructure and operational support across seven focused service areas.
+            </p>
+            <Button asChild variant="hero" size="lg" className="mt-8 rounded-full">
+              <Link to="/contact">Start an enquiry <ArrowRight /></Link>
+            </Button>
+          </Reveal>
+        </div>
+      </section>
 
-      <div className="container-page py-16 lg:py-20">
-        <nav aria-label="Service list" className="flex flex-wrap gap-2">
-          {services.map((s) => (
-            <a
-              key={s.slug}
-              href={`#${s.slug}`}
-              className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
-            >
-              {s.title}
-            </a>
-          ))}
-        </nav>
-
-        <div className="mt-14 space-y-8">
-          {services.map((s, i) => {
-            const Icon = s.icon;
-            return (
-              <section
-                key={s.slug}
-                id={s.slug}
-                className="scroll-mt-24 rounded-3xl border border-border bg-card p-7 shadow-soft sm:p-10"
+      <section className="container-page section-shell">
+        <Reveal>
+          <nav aria-label="Service list" className="flex flex-wrap gap-2 border-b border-black/10 pb-8">
+            {services.map((service, index) => (
+              <a
+                key={service.slug}
+                href={`#${service.slug}`}
+                className="rounded-full border border-black/10 px-4 py-2 text-xs font-semibold transition-colors hover:border-primary hover:text-primary"
               >
-                <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
-                  <div>
-                    <div className="flex items-center gap-4">
-                      <span className="grid size-12 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
-                        <Icon className="size-5" />
-                      </span>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Service 0{i + 1}
+                {String(index + 1).padStart(2, "0")} · {service.title}
+              </a>
+            ))}
+          </nav>
+        </Reveal>
+
+        <div className="mt-6">
+          {services.map((service, index) => {
+            const Icon = service.icon;
+            return (
+              <Reveal key={service.slug}>
+                <section
+                  id={service.slug}
+                  className="scroll-mt-28 border-b border-black/10 py-12 sm:py-16"
+                >
+                  <div className="grid gap-8 lg:grid-cols-[5rem_.9fr_1.1fr] lg:gap-10">
+                    <div className="flex items-start gap-4 lg:block">
+                      <span className="text-sm font-semibold text-primary">{String(index + 1).padStart(2, "0")}</span>
+                      <span className="ml-auto grid size-11 place-items-center rounded-full bg-[#f1f1f1] text-primary lg:mt-6 lg:ml-0">
+                        <Icon className="size-5" aria-hidden="true" />
                       </span>
                     </div>
-                    <h2 className="mt-5 text-2xl font-bold sm:text-3xl">{s.title}</h2>
-                    <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-                      {s.description}
-                    </p>
-                    <div className="mt-7 flex flex-wrap gap-3">
-                      <Button asChild variant="hero">
-                        <Link to="/contact">
-                          Get Started <ArrowRight />
-                        </Link>
-                      </Button>
-                      <Button asChild variant="soft">
-                        <Link to="/portfolio">See related work</Link>
-                      </Button>
+
+                    <div>
+                      <h2 className="max-w-xl text-3xl font-semibold leading-[1] tracking-[-0.05em] sm:text-4xl lg:text-5xl">
+                        {service.title}
+                      </h2>
+                      <p className="mt-5 max-w-xl text-base leading-8 text-muted-foreground">
+                        {service.description}
+                      </p>
+                    </div>
+
+                    <div className="lg:pl-10">
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">What we can cover</p>
+                      <ul className="mt-5 space-y-4">
+                        {service.highlights.map((highlight) => (
+                          <li key={highlight} className="flex items-start gap-3 text-sm leading-6 text-foreground/80">
+                            <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-black text-white">
+                              <Check className="size-3" aria-hidden="true" />
+                            </span>
+                            {highlight}
+                          </li>
+                        ))}
+                      </ul>
+                      <Link
+                        to="/contact"
+                        className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary"
+                      >
+                        Ask about this service <ArrowRight className="size-4" aria-hidden="true" />
+                      </Link>
                     </div>
                   </div>
-                  <div className="rounded-2xl bg-surface p-6">
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                      What's included
-                    </h3>
-                    <ul className="mt-4 space-y-3">
-                      {s.highlights.map((h) => (
-                        <li key={h} className="flex items-start gap-2.5 text-sm text-foreground">
-                          <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
-                          {h}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </section>
+                </section>
+              </Reveal>
             );
           })}
         </div>
-      </div>
+      </section>
 
-      <CtaBand title="Not sure which service you need?" description="Describe your situation and we'll tell you what we'd do first." />
+      <CtaBand
+        title="Not sure which service fits?"
+        description="Tell us what you are trying to improve and we can help shape the right starting point."
+      />
     </>
   );
 }
