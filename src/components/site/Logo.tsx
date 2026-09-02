@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
-export function Logo({ footer = false }: { footer?: boolean }) {
+export function Logo({ footer = false, inverse = false }: { footer?: boolean; inverse?: boolean }) {
   return (
     <Link
       to="/"
@@ -13,11 +13,13 @@ export function Logo({ footer = false }: { footer?: boolean }) {
         height={36}
         alt=""
         aria-hidden="true"
-        className="size-9 rounded-lg object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+        className={`size-9 rounded-lg object-contain transition-transform duration-300 group-hover:scale-[1.03] ${
+          inverse ? "ring-1 ring-white/20" : ""
+        }`}
       />
       <span
         className={`font-display text-lg font-bold tracking-[-0.04em] ${
-          footer ? "text-white" : "text-ink"
+          footer || inverse ? "text-white" : "text-ink"
         }`}
       >
         Blumebyte
