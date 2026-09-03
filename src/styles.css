@@ -97,10 +97,12 @@
   --sidebar-border: #dedede;
   --sidebar-ring: #7c5a1a;
   --gradient-brand: linear-gradient(135deg, #000000 0%, #7c5a1a 100%);
-  --gradient-soft: linear-gradient(180deg, rgba(124, 90, 26, 0.10), transparent 72%);
-  --gradient-mesh: radial-gradient(70% 70% at 15% 8%, rgba(124, 90, 26, 0.12), transparent 60%), radial-gradient(50% 50% at 100% 0%, rgba(0,0,0,.08), transparent 65%);
-  --shadow-soft: 0 1px 2px rgba(0,0,0,.05), 0 12px 30px -18px rgba(0,0,0,.22);
-  --shadow-lift: 0 12px 40px -24px rgba(0,0,0,.28);
+  --gradient-soft: linear-gradient(180deg, rgba(124, 90, 26, 0.1), transparent 72%);
+  --gradient-mesh:
+    radial-gradient(70% 70% at 15% 8%, rgba(124, 90, 26, 0.12), transparent 60%),
+    radial-gradient(50% 50% at 100% 0%, rgba(0, 0, 0, 0.08), transparent 65%);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.05), 0 12px 30px -18px rgba(0, 0, 0, 0.22);
+  --shadow-lift: 0 12px 40px -24px rgba(0, 0, 0, 0.28);
   --transition-smooth: 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -132,11 +134,30 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; }
-  body { background-color: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.035em; color: var(--color-ink); }
-  ::selection { background: rgba(124, 90, 26, .2); }
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+  }
+  ::selection {
+    background: rgba(124, 90, 26, 0.2);
+  }
 }
 
 @utility container-page {
@@ -144,7 +165,9 @@
   margin-inline: auto;
   max-width: 88rem;
   padding-inline: 1.25rem;
-  @media (min-width: 1024px) { padding-inline: 2.5rem; }
+  @media (min-width: 1024px) {
+    padding-inline: 2.5rem;
+  }
 }
 
 @utility section-shell {
@@ -157,15 +180,77 @@
   background-clip: text;
   color: transparent;
 }
-@utility bg-gradient-brand { background: var(--gradient-brand); }
-@utility bg-mesh { background-image: var(--gradient-mesh); }
-@utility shadow-soft { box-shadow: var(--shadow-soft); }
-@utility shadow-lift { box-shadow: var(--shadow-lift); }
+@utility bg-gradient-brand {
+  background: var(--gradient-brand);
+}
+@utility bg-mesh {
+  background-image: var(--gradient-mesh);
+}
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+@utility shadow-lift {
+  box-shadow: var(--shadow-lift);
+}
+
+.gallery-control {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  background: #fff;
+  transition:
+    transform var(--transition-smooth),
+    background var(--transition-smooth);
+}
+.gallery-control:hover {
+  transform: translateY(-2px);
+  background: #f1f1f1;
+}
+.gallery-control:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Editorial image layer for interior hero banners. Text remains on a dark,
+ * blurred gradient and the image is decorative so headings stay crawlable. */
+main > section:first-child.bg-black:not([data-header-theme]) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+main > section:first-child.bg-black:not([data-header-theme])::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: url("https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1800&q=78")
+    center / cover;
+  opacity: 0.28;
+  transform: scale(1.04);
+}
+main > section:first-child.bg-black:not([data-header-theme])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    100deg,
+    rgba(0, 0, 0, 0.98) 0%,
+    rgba(0, 0, 0, 0.82) 52%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  backdrop-filter: blur(2px);
+}
 
 .reveal {
   opacity: 0;
   transform: translateY(28px);
-  transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+  transition:
+    opacity var(--transition-smooth),
+    transform var(--transition-smooth);
   transition-delay: var(--reveal-delay, 0ms);
 }
 
@@ -179,7 +264,10 @@
   clip-path: inset(0 0 10% 0 round 1.5rem);
   transform: translateY(18px) scale(0.985);
   opacity: 0;
-  transition: clip-path 760ms cubic-bezier(0.22, 1, 0.36, 1), transform 760ms cubic-bezier(0.22, 1, 0.36, 1), opacity 600ms ease;
+  transition:
+    clip-path 760ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 760ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 600ms ease;
 }
 
 .media-mask[data-visible="true"] {
@@ -200,8 +288,8 @@
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 72% 28%, rgba(124, 90, 26, .48), transparent 18%),
-    radial-gradient(circle at 64% 42%, rgba(255, 255, 255, .08), transparent 12%),
+    radial-gradient(circle at 72% 28%, rgba(124, 90, 26, 0.48), transparent 18%),
+    radial-gradient(circle at 64% 42%, rgba(255, 255, 255, 0.08), transparent 12%),
     radial-gradient(circle at 50% 50%, #181818 0, #070707 46%, #000 74%);
 }
 
@@ -209,10 +297,12 @@
   content: "";
   position: absolute;
   inset: 18% 8% 8% 48%;
-  border: 1px solid rgba(181, 150, 88, .28);
+  border: 1px solid rgba(181, 150, 88, 0.28);
   border-radius: 50%;
   transform: rotate(-18deg);
-  box-shadow: 0 0 80px rgba(124, 90, 26, .16), inset 0 0 60px rgba(255,255,255,.04);
+  box-shadow:
+    0 0 80px rgba(124, 90, 26, 0.16),
+    inset 0 0 60px rgba(255, 255, 255, 0.04);
 }
 
 .product-universe-fallback::before {
@@ -223,21 +313,26 @@
   left: 24%;
   top: 26%;
   border-radius: 1.4rem;
-  border: 1px solid rgba(255,255,255,.16);
-  background: linear-gradient(145deg, rgba(255,255,255,.08), rgba(124,90,26,.18));
-  box-shadow: 0 32px 100px rgba(0,0,0,.5);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(124, 90, 26, 0.18));
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.5);
   transform: perspective(900px) rotateY(-13deg) rotateX(4deg);
 }
 
 .liquid-glass {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(255,255,255,.11), rgba(255,255,255,.035));
-  border: 1px solid rgba(255,255,255,.16);
-  box-shadow: inset 0 1px rgba(255,255,255,.12), 0 24px 80px rgba(0,0,0,.24);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.12),
+    0 24px 80px rgba(0, 0, 0, 0.24);
   backdrop-filter: blur(18px) saturate(115%);
   -webkit-backdrop-filter: blur(18px) saturate(115%);
-  transition: transform 420ms cubic-bezier(.22,1,.36,1), border-color 420ms ease, background 420ms ease;
+  transition:
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 420ms ease,
+    background 420ms ease;
 }
 
 .liquid-glass::before {
@@ -245,44 +340,61 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle at 12% 8%, rgba(255,255,255,.14), transparent 28%);
+  background: radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.14), transparent 28%);
 }
 
 .liquid-glass-emphasis {
-  background: linear-gradient(135deg, rgba(124,90,26,.22), rgba(255,255,255,.045));
-  border-color: rgba(181,150,88,.3);
+  background: linear-gradient(135deg, rgba(124, 90, 26, 0.22), rgba(255, 255, 255, 0.045));
+  border-color: rgba(181, 150, 88, 0.3);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .liquid-glass:hover {
     transform: translateY(-4px);
-    border-color: rgba(181,150,88,.35);
-    background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(124,90,26,.07));
+    border-color: rgba(181, 150, 88, 0.35);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(124, 90, 26, 0.07));
   }
 }
 
 .shader-static {
   background:
-    radial-gradient(circle at 65% 34%, rgba(124,90,26,.48), transparent 28%),
+    radial-gradient(circle at 65% 34%, rgba(124, 90, 26, 0.48), transparent 28%),
     linear-gradient(135deg, #000 4%, #151515 56%, #070707 100%);
 }
 
 .spatial-grid {
   background-image:
-    linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
 }
 
 @supports not (backdrop-filter: blur(1px)) {
-  .liquid-glass { background: rgba(20,20,20,.96); }
+  .liquid-glass {
+    background: rgba(20, 20, 20, 0.96);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
   .reveal,
-  .media-mask { opacity: 1 !important; transform: none !important; clip-path: none !important; }
-  .liquid-glass { transform: none !important; }
+  .media-mask {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  .liquid-glass {
+    transform: none !important;
+  }
 }

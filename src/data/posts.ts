@@ -8,6 +8,8 @@ export type Post = {
   author: string;
   readTime: string;
   body: string[];
+  image: string;
+  imageAlt: string;
 };
 
 export const posts: Post[] = [
@@ -26,6 +28,9 @@ export const posts: Post[] = [
       "A useful shortlist to explore includes GitHub Copilot's available free access options, Gemini Code Assist, Amazon Q Developer, Codeium/Windsurf's free tier, Continue, Tabby, Aider, Sourcegraph Cody's available entry tier, Replit's AI-assisted tools and editor-integrated open-source assistants. Product plans change, so always confirm current free-tier limits before adopting a tool for a team.",
       "Use these tools as assistants rather than automatic authorities. Review generated code, keep secrets out of prompts, test security-sensitive logic and maintain normal code review standards. The biggest productivity gain usually comes from combining a clear development process with AI rather than relying on the tool alone.",
     ],
+    image:
+      "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1600&q=82",
+    imageAlt: "Abstract artificial intelligence network visual",
   },
   {
     slug: "ai-coding-tools-small-teams",
@@ -42,6 +47,9 @@ export const posts: Post[] = [
       "The teams that benefit most are the ones with clear standards. When code conventions, review processes and deployment steps are written down, an assistant is more likely to produce work that fits the project.",
       "Use AI for drafts and repetitive work, keep people responsible for architecture, security and data decisions, and measure whether the workflow actually improves delivery quality or speed.",
     ],
+    image:
+      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1600&q=82",
+    imageAlt: "Developer working with code on a laptop",
   },
   {
     slug: "digital-transformation-without-disruption",
@@ -58,6 +66,9 @@ export const posts: Post[] = [
       "A staged rollout creates reversible steps: one department, one process or one workflow at a time. Each stage produces feedback and a clear decision point before the next phase begins.",
       "Training should be part of delivery rather than an afterthought. Systems are more likely to succeed when the people using them understand what changes, why it changes and where to get support.",
     ],
+    image:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=82",
+    imageAlt: "Team mapping a change plan with notes",
   },
   {
     slug: "ai-infrastructure-choices-african-businesses",
@@ -74,6 +85,9 @@ export const posts: Post[] = [
       "Cloud and hybrid approaches can reduce the amount of infrastructure a smaller organisation has to manage directly, while local caching or offline-capable experiences can still matter when connectivity is inconsistent.",
       "Cost control matters as much as raw capability. Start with the smallest configuration that meets the workload, monitor actual usage and scale when the evidence supports it.",
     ],
+    image:
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=82",
+    imageAlt: "Connected globe representing digital infrastructure",
   },
   {
     slug: "business-technology-trends-2026",
@@ -90,6 +104,9 @@ export const posts: Post[] = [
       "Connected productivity platforms can also reduce the number of places where information gets lost. The objective is not to collect more software; it is to make the tools already in use work together more clearly.",
       "Security fundamentals such as multi-factor authentication, managed backups and sensible device policies should remain part of any technology investment conversation.",
     ],
+    image:
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=82",
+    imageAlt: "Detailed view of modern computing hardware",
   },
   {
     slug: "dashboards-people-actually-use",
@@ -106,6 +123,9 @@ export const posts: Post[] = [
       "Keep the first version focused: a primary metric, a useful trend and the few breakdowns that explain what changed. Additional views can be added after observing what users actually need.",
       "Performance and clarity are features. A dashboard should make important information easy to find on the devices and connections people really use.",
     ],
+    image:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=82",
+    imageAlt: "Business analytics dashboard on a laptop",
   },
   {
     slug: "hr-software-small-organisations",
@@ -122,6 +142,9 @@ export const posts: Post[] = [
       "Adoption depends on the employee experience. If common actions are clear and mobile-friendly, people are more likely to use the system consistently.",
       "Blumebyte HR is designed around a practical core so growing teams can manage people processes without turning the software itself into a full-time job.",
     ],
+    image:
+      "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1600&q=82",
+    imageAlt: "Colleagues collaborating in a modern office",
   },
 ];
 

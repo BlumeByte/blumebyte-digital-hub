@@ -36,7 +36,38 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const [overDark, setOverDark] = useState(pathname === "/");
   const darkHeader = pathname === "/";
+
+  useEffect(() => {
+    if (pathname !== "/") {
+      setOverDark(false);
+      return;
+    }
+    let frame = 0;
+    const detect = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-header-theme]"));
+        const element =
+          sections.find((section) => {
+            const rect = section.getBoundingClientRect();
+            return rect.top <= 36 && rect.bottom > 36;
+          }) ?? sections.filter((section) => section.getBoundingClientRect().top <= 36).at(-1);
+        setOverDark(element?.dataset["headerTheme"] !== "light");
+      });
+    };
+    detect();
+    window.addEventListener("scroll", detect, { passive: true });
+    window.addEventListener("resize", detect);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", detect);
+      window.removeEventListener("resize", detect);
+    };
+  }, [pathname]);
+
+  const inverse = darkHeader ? overDark : false;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -45,17 +76,21 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navLinkClass = darkHeader
+  const navLinkClass = inverse
     ? "px-2.5 py-2 text-[13px] font-medium text-white/68 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C5A1A] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
     : "px-2.5 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C5A1A] focus-visible:ring-offset-2";
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         darkHeader
           ? scrolled
-            ? "border-b border-white/10 bg-black/82 shadow-[0_12px_36px_-24px_rgba(0,0,0,.8)] backdrop-blur-xl"
-            : "border-b border-transparent bg-black/16 backdrop-blur-sm"
+            ? inverse
+              ? "border-b border-white/10 bg-black/64 shadow-[0_12px_36px_-24px_rgba(0,0,0,.8)] backdrop-blur-xl"
+              : "border-b border-black/10 bg-white/68 backdrop-blur-xl"
+            : inverse
+              ? "border-b border-transparent bg-black/10 backdrop-blur-[2px]"
+              : "border-b border-transparent bg-white/10 backdrop-blur-[2px]"
           : scrolled
             ? "border-b border-black/10 bg-white/92 shadow-[0_10px_30px_-24px_rgba(0,0,0,.45)] backdrop-blur-xl"
             : "border-b border-transparent bg-white/95"
@@ -66,7 +101,7 @@ export function Header() {
           scrolled ? "h-15" : "h-18"
         }`}
       >
-        <Logo inverse={darkHeader} />
+        <Logo inverse={inverse} />
 
         <nav aria-label="Main navigation" className="hidden items-center gap-1 xl:flex">
           {primaryNav.map((item) => (
@@ -75,7 +110,7 @@ export function Header() {
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
               className={navLinkClass}
-              activeProps={{ className: darkHeader ? "text-white" : "text-foreground" }}
+              activeProps={{ className: inverse ? "text-white" : "text-foreground" }}
             >
               {item.label}
             </Link>
@@ -84,7 +119,7 @@ export function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger
               className={`flex items-center gap-1 px-2.5 py-2 text-[13px] font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#7C5A1A] ${
-                darkHeader
+                inverse
                   ? "text-white/68 hover:text-white data-[state=open]:text-white"
                   : "text-muted-foreground hover:text-foreground data-[state=open]:text-foreground"
               }`}
@@ -111,7 +146,7 @@ export function Header() {
               key={item.to}
               to={item.to}
               className={navLinkClass}
-              activeProps={{ className: darkHeader ? "text-white" : "text-foreground" }}
+              activeProps={{ className: inverse ? "text-white" : "text-foreground" }}
             >
               {item.label}
             </Link>
@@ -130,7 +165,7 @@ export function Header() {
               variant="outline"
               size="icon"
               aria-label="Open navigation menu"
-              className={`rounded-full ${darkHeader ? "border-white/20 bg-white/5 text-white hover:bg-white/12 hover:text-white" : ""}`}
+              className={`rounded-full ${inverse ? "border-white/20 bg-white/5 text-white hover:bg-white/12 hover:text-white" : ""}`}
             >
               <Menu aria-hidden="true" />
             </Button>
@@ -154,7 +189,9 @@ export function Header() {
               ))}
 
               <div className="border-b border-black/10 py-4">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">Portfolio</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+                  Portfolio
+                </p>
                 <div className="flex flex-col">
                   {portfolioNav.map((item) => (
                     <Link

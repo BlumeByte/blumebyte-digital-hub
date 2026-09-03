@@ -16,6 +16,8 @@ import { Footer } from "@/components/site/Footer";
 import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { CookieConsent } from "@/components/site/CookieConsent";
 import { Toaster } from "@/components/ui/sonner";
+import { SmartChat } from "@/components/site/SmartChat";
+import { ScrollToTop } from "@/components/site/ScrollToTop";
 
 function NotFoundComponent() {
   return (
@@ -151,6 +153,8 @@ function RootComponent() {
         <Footer />
       </div>
       <WhatsAppButton />
+      <SmartChat />
+      <ScrollToTop />
       <CookieConsent />
       <Toaster />
     </QueryClientProvider>
