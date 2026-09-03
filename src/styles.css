@@ -227,9 +227,20 @@ main > section:first-child.bg-black:not([data-header-theme])::before {
   inset: 0;
   z-index: -2;
   background: url("https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1800&q=78")
-    center / cover;
-  opacity: 0.28;
-  transform: scale(1.04);
+    82% center / cover;
+  filter: blur(3px) saturate(0.8);
+  opacity: 0.1;
+  transform: scale(1.06);
+  transition:
+    opacity 600ms ease,
+    filter 600ms ease,
+    transform 900ms cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+main > section:first-child.bg-black:not([data-header-theme]):hover::before,
+main > section:first-child.bg-black:not([data-header-theme]):focus-within::before {
+  filter: blur(1px) saturate(0.95);
+  opacity: 0.3;
+  transform: scale(1.025) translateX(-0.5%);
 }
 main > section:first-child.bg-black:not([data-header-theme])::after {
   content: "";
@@ -239,10 +250,16 @@ main > section:first-child.bg-black:not([data-header-theme])::after {
   background: linear-gradient(
     100deg,
     rgba(0, 0, 0, 0.98) 0%,
-    rgba(0, 0, 0, 0.82) 52%,
-    rgba(0, 0, 0, 0.55) 100%
+    rgba(0, 0, 0, 0.92) 55%,
+    rgba(0, 0, 0, 0.46) 100%
   );
   backdrop-filter: blur(2px);
+}
+
+@media (hover: none) {
+  main > section:first-child.bg-black:not([data-header-theme])::before {
+    opacity: 0.16;
+  }
 }
 
 .reveal {
