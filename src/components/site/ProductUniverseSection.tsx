@@ -1,17 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import hrImage from "@/assets/hr-dashboard.jpg";
 import { Button } from "@/components/ui/button";
-import { ThreeExperience } from "@/components/three/ThreeExperience";
 import { projects } from "@/data/projects";
-
-const ProductUniverse = lazy(() =>
-  import("@/components/three/ProductUniverse").then((module) => ({
-    default: module.ProductUniverse,
-  })),
-);
+import { getProductVisual } from "@/lib/product-visuals";
 
 export function ProductUniverseSection() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -59,9 +52,7 @@ export function ProductUniverseSection() {
     };
   }, []);
 
-  const fallback = (
-    <div className="three-fallback product-universe-fallback absolute inset-0" aria-hidden="true" />
-  );
+  const activeVisual = getProductVisual(projects, activeIndex);
 
   return (
     <section
@@ -81,25 +72,33 @@ export function ProductUniverseSection() {
 
         <div className="grid gap-12 lg:grid-cols-[.95fr_1.05fr] lg:gap-20">
           <div className="relative hidden min-h-[72vh] lg:block">
-            <div className="sticky top-24 h-[70vh] overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#060606]">
-              <Suspense fallback={fallback}>
-                <ThreeExperience
-                  fallback={fallback}
-                  className="absolute inset-0 h-full w-full"
-                  camera={{ position: [0, 0, 5.4], fov: 40 }}
-                >
-                  <ProductUniverse activeIndex={activeIndex} progress={scrollProgress} />
-                </ThreeExperience>
-              </Suspense>
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black to-transparent" />
+            <div className="sticky top-24 h-[70vh] overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#060606] shadow-[0_40px_120px_rgba(0,0,0,.45)]">
+              <div className="absolute inset-0">
+                <img
+                  key={activeVisual.src}
+                  src={activeVisual.src}
+                  alt={activeVisual.alt}
+                  className="h-full w-full object-cover object-center opacity-95 transition duration-700"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.06)_0%,rgba(0,0,0,.16)_48%,rgba(0,0,0,.92)_100%)]" />
+                <div className="absolute inset-0 ring-1 ring-inset ring-white/5" />
+              </div>
+
+              <div className="absolute left-6 top-6 rounded-full border border-white/15 bg-black/55 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#d5b16b] backdrop-blur-md">
+                {String(activeIndex + 1).padStart(2, "0")} · {activeVisual.category}
+              </div>
+
               <div className="absolute inset-x-6 bottom-6">
+                <h3 className="mb-5 text-3xl font-semibold tracking-[-0.045em] text-white">
+                  {activeVisual.title}
+                </h3>
                 <div className="mb-3 h-px bg-white/15">
                   <span
-                    className="block h-full origin-left bg-[#d5b16b]"
+                    className="block h-full origin-left bg-[#d5b16b] transition-transform duration-150"
                     style={{ transform: `scaleX(${scrollProgress})` }}
                   />
                 </div>
-                <p className="text-xs uppercase tracking-[0.2em] text-white/45">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/55">
                   Scroll to move through the system · {Math.round(scrollProgress * 100)}%
                 </p>
               </div>
@@ -115,10 +114,10 @@ export function ProductUniverseSection() {
               >
                 <div className="mb-8 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.035] lg:hidden">
                   <img
-                    src={project.slug === "blumebyte-hr" ? hrImage : project.image}
+                    src={project.image}
                     alt={project.imageAlt}
                     loading="lazy"
-                    className="aspect-[4/3] w-full object-cover object-center opacity-90"
+                    className="aspect-[4/3] w-full object-cover object-center opacity-95"
                   />
                 </div>
 
