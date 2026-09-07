@@ -10,9 +10,12 @@ describe("openMailtoFromUserGesture", () => {
 
     const fakeDocument = {
       createElement: () => ({
-        style: {} as Record<string, string>,
+        style: { display: "" },
         set href(value: string) {
           href = value;
+        },
+        get href() {
+          return href;
         },
         click: () => {
           clicked = true;
