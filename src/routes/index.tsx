@@ -15,6 +15,7 @@ import { siteConfig } from "@/config/site";
 import { faqs } from "@/data/faqs";
 import { posts } from "@/data/posts";
 import { services } from "@/data/services";
+import { getYoutubeCommandOrigin } from "@/lib/youtube-embed";
 
 const HeroScene = lazy(() =>
   import("@/components/three/HeroScene").then((module) => ({ default: module.HeroScene })),
@@ -24,10 +25,12 @@ function YoutubeFeature() {
   const frame = useRef<HTMLIFrameElement>(null);
   const [muted, setMuted] = useState(true);
   const toggleAudio = () => {
+    const iframe = frame.current;
+    if (!iframe) return;
     const next = !muted;
-    frame.current?.contentWindow?.postMessage(
+    iframe.contentWindow?.postMessage(
       JSON.stringify({ event: "command", func: next ? "mute" : "unMute", args: [] }),
-      "https://www.youtube.com",
+      getYoutubeCommandOrigin(iframe.src),
     );
     setMuted(next);
   };
