@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getHeaderPositionClass, getHomeHeaderSurfaceClass } from "@/lib/header-layout";
 
 const primaryNav = [
   { label: "Home", to: "/" },
@@ -79,22 +80,16 @@ export function Header() {
   const navLinkClass = inverse
     ? "px-2.5 py-2 text-[13px] font-medium text-white/68 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C5A1A] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
     : "px-2.5 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C5A1A] focus-visible:ring-offset-2";
+  const positionClass = getHeaderPositionClass(darkHeader);
+  const surfaceClass = darkHeader
+    ? getHomeHeaderSurfaceClass(scrolled, inverse)
+    : scrolled
+      ? "border-b border-black/10 bg-white/92 shadow-[0_10px_30px_-24px_rgba(0,0,0,.45)] backdrop-blur-xl"
+      : "border-b border-transparent bg-white/95";
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        darkHeader
-          ? scrolled
-            ? inverse
-              ? "border-b border-white/10 bg-black/64 shadow-[0_12px_36px_-24px_rgba(0,0,0,.8)] backdrop-blur-xl"
-              : "border-b border-black/10 bg-white/68 backdrop-blur-xl"
-            : inverse
-              ? "border-b border-transparent bg-black/10 backdrop-blur-[2px]"
-              : "border-b border-transparent bg-white/10 backdrop-blur-[2px]"
-          : scrolled
-            ? "border-b border-black/10 bg-white/92 shadow-[0_10px_30px_-24px_rgba(0,0,0,.45)] backdrop-blur-xl"
-            : "border-b border-transparent bg-white/95"
-      }`}
+      className={`${positionClass} top-0 z-50 w-full transition-all duration-300 ${surfaceClass}`}
     >
       <div
         className={`container-page flex items-center justify-between gap-5 transition-[height] duration-300 ${
