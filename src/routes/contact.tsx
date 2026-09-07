@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { type FormEvent } from "react";
+import { type FormEvent, useState } from "react";
 import { Mail, MessageCircle, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/site/Reveal";
 import { siteConfig, whatsappLink } from "@/config/site";
 import { buildEnquiryMailto } from "@/lib/enquiry-mailto";
+import { openMailtoFromUserGesture } from "@/lib/open-mailto";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -23,12 +24,12 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
+  const [preparedMailto, setPreparedMailto] = useState<string | null>(null);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-
-    window.location.href = buildEnquiryMailto({
+    const formData = new FormData(event.currentTarget);
+    const mailto = buildEnquiryMailto({
       name: String(formData.get("name") || ""),
       email: String(formData.get("email") || ""),
       phone: String(formData.get("phone") || ""),
@@ -36,6 +37,9 @@ function ContactPage() {
       service: String(formData.get("service") || ""),
       message: String(formData.get("message") || ""),
     });
+
+    setPreparedMailto(mailto);
+    openMailtoFromUserGesture(mailto);
   }
 
   return (
@@ -109,6 +113,18 @@ function ContactPage() {
               </Button>
               <p className="text-xs leading-5 text-muted-foreground">Your email app will open with subject “Enquiry”. You can review the message before sending.</p>
             </div>
+
+            {preparedMailto ? (
+              <div className="mt-5 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm leading-6">
+                <p className="font-medium text-foreground">Email prepared.</p>
+                <p className="mt-1 text-muted-foreground">
+                  If your browser did not open an email app, use the direct link below. Your form details are already included in the draft.
+                </p>
+                <a href={preparedMailto} className="mt-3 inline-flex font-semibold text-primary underline underline-offset-4">
+                  Open prepared email to {siteConfig.email}
+                </a>
+              </div>
+            ) : null}
           </form>
         </Reveal>
       </section>
