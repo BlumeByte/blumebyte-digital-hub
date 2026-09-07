@@ -1,5 +1,5 @@
 type MailtoAnchor = {
-  style: Record<string, string>;
+  style: { display: string };
   href: string;
   click: () => void;
   remove: () => void;
@@ -10,7 +10,10 @@ type MailtoDocument = {
   body: { appendChild: (anchor: MailtoAnchor) => void };
 };
 
-export function openMailtoFromUserGesture(href: string, documentRef: MailtoDocument = document) {
+export function openMailtoFromUserGesture(
+  href: string,
+  documentRef: MailtoDocument = document as unknown as MailtoDocument,
+) {
   const anchor = documentRef.createElement("a");
   anchor.href = href;
   anchor.style.display = "none";
