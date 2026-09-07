@@ -1,6 +1,7 @@
+import { useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import { Color, ShaderMaterial } from "three";
+import { Color, ShaderMaterial, SRGBColorSpace } from "three";
 
 const vertexShader = `
   varying vec2 vUv;
@@ -32,6 +33,18 @@ const fragmentShader = `
   }
 `;
 
+function LightProductField() {
+  const texture = useTexture("/portfolio/blumebyte-hr-dashboard.jpg");
+  texture.colorSpace = SRGBColorSpace;
+
+  return (
+    <mesh scale={[8, 4.5, 1]}>
+      <planeGeometry args={[1, 1, 1, 1]} />
+      <meshBasicMaterial map={texture} toneMapped={false} />
+    </mesh>
+  );
+}
+
 export function ShaderField({
   variant = "dark-gold",
   progress = 0,
@@ -39,16 +52,21 @@ export function ShaderField({
   variant?: "dark-gold" | "light-gold";
   progress?: number;
 }) {
+  if (variant === "light-gold") return <LightProductField />;
+  return <DarkShaderField progress={progress} />;
+}
+
+function DarkShaderField({ progress }: { progress: number }) {
   const material = useRef<ShaderMaterial>(null);
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
       uProgress: { value: progress },
       uGold: { value: new Color("#7C5A1A") },
-      uDark: { value: new Color(variant === "dark-gold" ? "#000000" : "#d9d9d9") },
-      uLight: { value: new Color(variant === "dark-gold" ? "#171717" : "#f1f1f1") },
+      uDark: { value: new Color("#000000") },
+      uLight: { value: new Color("#171717") },
     }),
-    [progress, variant],
+    [progress],
   );
 
   useFrame((_, delta) => {
@@ -60,7 +78,12 @@ export function ShaderField({
   return (
     <mesh scale={[8, 4.5, 1]}>
       <planeGeometry args={[1, 1, 1, 1]} />
-      <shaderMaterial ref={material} vertexShader={vertexShader} fragmentShader={fragmentShader} uniforms={uniforms} />
+      <shaderMaterial
+        ref={material}
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={uniforms}
+      />
     </mesh>
   );
 }
