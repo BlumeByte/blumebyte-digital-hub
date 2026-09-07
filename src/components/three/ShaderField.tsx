@@ -3,6 +3,8 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import { Color, ShaderMaterial, SRGBColorSpace } from "three";
 
+import { businessTransitionImage } from "@/lib/home-visuals";
+
 const vertexShader = `
   varying vec2 vUv;
   void main() {
@@ -33,12 +35,12 @@ const fragmentShader = `
   }
 `;
 
-function LightProductField() {
-  const texture = useTexture("/portfolio/blumebyte-hr-dashboard.jpg");
+function LightBusinessField() {
+  const texture = useTexture(businessTransitionImage.src);
   texture.colorSpace = SRGBColorSpace;
 
   return (
-    <mesh scale={[8, 4.5, 1]}>
+    <mesh scale={[8, 2.5, 1]}>
       <planeGeometry args={[1, 1, 1, 1]} />
       <meshBasicMaterial map={texture} toneMapped={false} />
     </mesh>
@@ -52,7 +54,7 @@ export function ShaderField({
   variant?: "dark-gold" | "light-gold";
   progress?: number;
 }) {
-  if (variant === "light-gold") return <LightProductField />;
+  if (variant === "light-gold") return <LightBusinessField />;
   return <DarkShaderField progress={progress} />;
 }
 
