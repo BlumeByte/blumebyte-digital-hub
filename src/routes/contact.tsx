@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { type FormEvent, useState } from "react";
-import { Mail, MessageCircle, Phone } from "lucide-react";
+import { CheckCircle2, Mail, MessageCircle, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/site/Reveal";
 import { siteConfig, whatsappLink } from "@/config/site";
-import { buildEnquiryMailto } from "@/lib/enquiry-mailto";
-import { openMailtoFromUserGesture } from "@/lib/open-mailto";
+import { submitGoogleFormEnquiry } from "@/lib/google-form-enquiry";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -23,23 +22,34 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
+type SubmissionState = "idle" | "submitting" | "success" | "error";
+
 function ContactPage() {
-  const [preparedMailto, setPreparedMailto] = useState<string | null>(null);
+  const [submissionState, setSubmissionState] = useState<SubmissionState>("idle");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const mailto = buildEnquiryMailto({
-      name: String(formData.get("name") || ""),
-      email: String(formData.get("email") || ""),
-      phone: String(formData.get("phone") || ""),
-      company: String(formData.get("company") || ""),
-      service: String(formData.get("service") || ""),
-      message: String(formData.get("message") || ""),
-    });
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
-    setPreparedMailto(mailto);
-    openMailtoFromUserGesture(mailto);
+    setSubmissionState("submitting");
+
+    try {
+      await submitGoogleFormEnquiry({
+        name: String(formData.get("name") || ""),
+        email: String(formData.get("email") || ""),
+        phone: String(formData.get("phone") || ""),
+        company: String(formData.get("company") || ""),
+        service: String(formData.get("service") || ""),
+        message: String(formData.get("message") || ""),
+        privacyAccepted: formData.get("privacyAccepted") === "yes",
+      });
+
+      form.reset();
+      setSubmissionState("success");
+    } catch {
+      setSubmissionState("error");
+    }
   }
 
   return (
@@ -47,7 +57,7 @@ function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title="Tell us what you want to build"
-        description="Share the challenge, idea or system you need. The form opens a prepared email to Blumebyte so you can review your enquiry before sending it."
+        description="Share the challenge, idea or system you need. Your enquiry will be sent directly to Blumebyte and recorded securely for follow-up."
       />
 
       <section className="container-page grid gap-12 py-16 lg:grid-cols-[0.8fr_1.2fr] lg:py-24">
@@ -80,12 +90,12 @@ function ContactPage() {
             <div className="grid gap-5 sm:grid-cols-2">
               <Field label="Name" name="name" required />
               <Field label="Email" name="email" type="email" required />
-              <Field label="Phone" name="phone" />
-              <Field label="Company / Organization" name="company" />
+              <Field label="Phone" name="phone" type="tel" required />
+              <Field label="Company / Organization" name="company" required />
             </div>
             <label className="mt-5 block text-sm font-medium">
               Service of interest
-              <select name="service" className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15">
+              <select name="service" required className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15">
                 <option value="">Choose a service</option>
                 <option>Web Design & Custom Dashboards</option>
                 <option>Hosting & Domain Solutions</option>
@@ -108,21 +118,36 @@ function ContactPage() {
             </label>
 
             <div className="mt-7 flex flex-wrap items-center gap-4">
-              <Button type="submit" variant="hero" size="lg" className="rounded-full">
-                Prepare email enquiry
+              <Button
+                type="submit"
+                variant="hero"
+                size="lg"
+                className="rounded-full"
+                disabled={submissionState === "submitting"}
+              >
+                {submissionState === "submitting" ? "Sending enquiry…" : "Send enquiry"}
               </Button>
-              <p className="text-xs leading-5 text-muted-foreground">Your email app will open with subject “Enquiry”. You can review the message before sending.</p>
+              <p className="text-xs leading-5 text-muted-foreground">
+                Your enquiry will be recorded in Blumebyte&apos;s response system for follow-up.
+              </p>
             </div>
 
-            {preparedMailto ? (
-              <div className="mt-5 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm leading-6">
-                <p className="font-medium text-foreground">Email prepared.</p>
+            {submissionState === "success" ? (
+              <div className="mt-5 flex gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm leading-6">
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+                <div>
+                  <p className="font-medium text-foreground">Thank you. Your enquiry has been received.</p>
+                  <p className="mt-1 text-muted-foreground">Blumebyte will get back to you shortly.</p>
+                </div>
+              </div>
+            ) : null}
+
+            {submissionState === "error" ? (
+              <div className="mt-5 rounded-2xl border border-destructive/25 bg-destructive/5 p-4 text-sm leading-6">
+                <p className="font-medium text-foreground">We could not send your enquiry.</p>
                 <p className="mt-1 text-muted-foreground">
-                  If your browser did not open an email app, use the direct link below. Your form details are already included in the draft.
+                  Please try again, or contact us directly by email or WhatsApp using the options on this page.
                 </p>
-                <a href={preparedMailto} className="mt-3 inline-flex font-semibold text-primary underline underline-offset-4">
-                  Open prepared email to {siteConfig.email}
-                </a>
               </div>
             ) : null}
           </form>
