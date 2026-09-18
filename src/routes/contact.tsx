@@ -1,12 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { type FormEvent, useState } from "react";
+import { useRef, useState } from "react";
 import { CheckCircle2, Mail, MessageCircle, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/site/Reveal";
 import { siteConfig, whatsappLink } from "@/config/site";
-import { submitGoogleFormEnquiry } from "@/lib/google-form-enquiry";
+import {
+  GOOGLE_FORM_ENDPOINT,
+  GOOGLE_FORM_ENTRY_IDS,
+  PRIVACY_CONSENT_VALUE,
+} from "@/lib/google-form-enquiry";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -22,34 +26,24 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
-type SubmissionState = "idle" | "submitting" | "success" | "error";
+type SubmissionState = "idle" | "submitting" | "success";
 
 function ContactPage() {
   const [submissionState, setSubmissionState] = useState<SubmissionState>("idle");
+  const formRef = useRef<HTMLFormElement>(null);
+  const waitingForGoogleResponse = useRef(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-
+  function handleSubmit() {
+    waitingForGoogleResponse.current = true;
     setSubmissionState("submitting");
+  }
 
-    try {
-      await submitGoogleFormEnquiry({
-        name: String(formData.get("name") || ""),
-        email: String(formData.get("email") || ""),
-        phone: String(formData.get("phone") || ""),
-        company: String(formData.get("company") || ""),
-        service: String(formData.get("service") || ""),
-        message: String(formData.get("message") || ""),
-        privacyAccepted: formData.get("privacyAccepted") === "yes",
-      });
+  function handleGoogleResponseLoad() {
+    if (!waitingForGoogleResponse.current) return;
 
-      form.reset();
-      setSubmissionState("success");
-    } catch {
-      setSubmissionState("error");
-    }
+    waitingForGoogleResponse.current = false;
+    formRef.current?.reset();
+    setSubmissionState("success");
   }
 
   return (
@@ -86,71 +80,97 @@ function ContactPage() {
         </Reveal>
 
         <Reveal delay={80}>
-          <form onSubmit={handleSubmit} className="rounded-3xl border border-border bg-card p-6 shadow-soft sm:p-8">
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Name" name="name" required />
-              <Field label="Email" name="email" type="email" required />
-              <Field label="Phone" name="phone" type="tel" required />
-              <Field label="Company / Organization" name="company" required />
-            </div>
-            <label className="mt-5 block text-sm font-medium">
-              Service of interest
-              <select name="service" required className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15">
-                <option value="">Choose a service</option>
-                <option>Web Design & Custom Dashboards</option>
-                <option>Hosting & Domain Solutions</option>
-                <option>Mobile App & Game Development</option>
-                <option>Virtual Assistance</option>
-                <option>SmartSuite Solutions</option>
-                <option>PrintTech Supplies</option>
-                <option>E-commerce</option>
-                <option>Blumebyte HR</option>
-                <option>Other</option>
-              </select>
-            </label>
-            <label className="mt-5 block text-sm font-medium">
-              Tell us about your project
-              <textarea name="message" required rows={7} className="mt-2 w-full resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" placeholder="What are you trying to build or improve?" />
-            </label>
-            <label className="mt-4 flex items-start gap-3 text-xs leading-5 text-muted-foreground">
-              <input type="checkbox" required name="privacyAccepted" value="yes" className="mt-1" />
-              <span>I agree that Blumebyte may use the information I submit to respond to this enquiry in accordance with the Privacy Policy.</span>
-            </label>
+          <div>
+            <iframe
+              name="blumebyte-google-form-response"
+              title="Contact form submission response"
+              className="hidden"
+              onLoad={handleGoogleResponseLoad}
+            />
 
-            <div className="mt-7 flex flex-wrap items-center gap-4">
-              <Button
-                type="submit"
-                variant="hero"
-                size="lg"
-                className="rounded-full"
-                disabled={submissionState === "submitting"}
-              >
-                {submissionState === "submitting" ? "Sending enquiry…" : "Send enquiry"}
-              </Button>
-              <p className="text-xs leading-5 text-muted-foreground">
-                Your enquiry will be recorded in Blumebyte&apos;s response system for follow-up.
-              </p>
-            </div>
-
-            {submissionState === "success" ? (
-              <div className="mt-5 flex gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm leading-6">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
-                <div>
-                  <p className="font-medium text-foreground">Thank you. Your enquiry has been received.</p>
-                  <p className="mt-1 text-muted-foreground">Blumebyte will get back to you shortly.</p>
-                </div>
+            <form
+              ref={formRef}
+              action={GOOGLE_FORM_ENDPOINT}
+              method="POST"
+              target="blumebyte-google-form-response"
+              onSubmit={handleSubmit}
+              className="rounded-3xl border border-border bg-card p-6 shadow-soft sm:p-8"
+            >
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field label="Name" name={GOOGLE_FORM_ENTRY_IDS.name} required />
+                <Field label="Email" name={GOOGLE_FORM_ENTRY_IDS.email} type="email" required />
+                <Field label="Phone" name={GOOGLE_FORM_ENTRY_IDS.phone} type="tel" required />
+                <Field label="Company / Organization" name={GOOGLE_FORM_ENTRY_IDS.company} required />
               </div>
-            ) : null}
 
-            {submissionState === "error" ? (
-              <div className="mt-5 rounded-2xl border border-destructive/25 bg-destructive/5 p-4 text-sm leading-6">
-                <p className="font-medium text-foreground">We could not send your enquiry.</p>
-                <p className="mt-1 text-muted-foreground">
-                  Please try again, or contact us directly by email or WhatsApp using the options on this page.
+              <label className="mt-5 block text-sm font-medium">
+                Service of interest
+                <select
+                  name={GOOGLE_FORM_ENTRY_IDS.service}
+                  required
+                  className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                >
+                  <option value="">Choose a service</option>
+                  <option>Web Design & Custom Dashboards</option>
+                  <option>Hosting & Domain Solutions</option>
+                  <option>Mobile App & Game Development</option>
+                  <option>Virtual Assistance</option>
+                  <option>SmartSuite Solutions</option>
+                  <option>PrintTech Supplies</option>
+                  <option>E-commerce</option>
+                  <option>Blumebyte HR</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label className="mt-5 block text-sm font-medium">
+                Tell us about your project
+                <textarea
+                  name={GOOGLE_FORM_ENTRY_IDS.message}
+                  required
+                  rows={7}
+                  className="mt-2 w-full resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                  placeholder="What are you trying to build or improve?"
+                />
+              </label>
+
+              <label className="mt-4 flex items-start gap-3 text-xs leading-5 text-muted-foreground">
+                <input
+                  type="checkbox"
+                  required
+                  name={GOOGLE_FORM_ENTRY_IDS.privacy}
+                  value={PRIVACY_CONSENT_VALUE}
+                  className="mt-1"
+                />
+                <span>I agree that Blumebyte may use the information I submit to respond to this enquiry in accordance with the Privacy Policy.</span>
+              </label>
+
+              <div className="mt-7 flex flex-wrap items-center gap-4">
+                <Button
+                  type="submit"
+                  variant="hero"
+                  size="lg"
+                  className="rounded-full"
+                  disabled={submissionState === "submitting"}
+                >
+                  {submissionState === "submitting" ? "Sending enquiry…" : "Send enquiry"}
+                </Button>
+                <p className="text-xs leading-5 text-muted-foreground">
+                  Your enquiry will be recorded in Blumebyte&apos;s response system for follow-up.
                 </p>
               </div>
-            ) : null}
-          </form>
+
+              {submissionState === "success" ? (
+                <div className="mt-5 flex gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm leading-6">
+                  <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+                  <div>
+                    <p className="font-medium text-foreground">Thank you. Your enquiry has been received.</p>
+                    <p className="mt-1 text-muted-foreground">Blumebyte will get back to you shortly.</p>
+                  </div>
+                </div>
+              ) : null}
+            </form>
+          </div>
         </Reveal>
       </section>
     </>
