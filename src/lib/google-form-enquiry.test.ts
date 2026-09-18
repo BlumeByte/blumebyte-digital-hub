@@ -20,13 +20,13 @@ describe("buildGoogleFormPayload", () => {
     expect(GOOGLE_FORM_ENDPOINT).toBe(
       "https://docs.google.com/forms/d/e/1FAIpQLSdn1furyhYXDUpLF6T56oU7j8KPeD0CKiSO8SAqLLt_NNecqQ/formResponse",
     );
-    expect(payload.get("entry.1581587491")).toBe("Isaac Tetteh");
-    expect(payload.get("entry.1694573941")).toBe("isaac@example.com");
-    expect(payload.get("entry.1509200643")).toBe("+233 25 612 2555");
-    expect(payload.get("entry.1461596066")).toBe("Blumebyte");
-    expect(payload.get("entry.727777464")).toBe("Web Design & Custom Dashboards");
-    expect(payload.get("entry.2048585400")).toBe("I need a client dashboard.");
-    expect(payload.get("entry.1943602030")).toBe(PRIVACY_CONSENT_VALUE);
+    expect(payload.get("entry.1429787837")).toBe("Isaac Tetteh");
+    expect(payload.get("entry.2086077928")).toBe("isaac@example.com");
+    expect(payload.get("entry.1789184807")).toBe("+233 25 612 2555");
+    expect(payload.get("entry.1870899631")).toBe("Blumebyte");
+    expect(payload.get("entry.975217014")).toBe("Web Design & Custom Dashboards");
+    expect(payload.get("entry.1926531696")).toBe("I need a client dashboard.");
+    expect(payload.get("entry.1907540901")).toBe(PRIVACY_CONSENT_VALUE);
   });
 
   test("omits privacy consent when it is not accepted", () => {
@@ -40,6 +40,6 @@ describe("buildGoogleFormPayload", () => {
       privacyAccepted: false,
     });
 
-    expect(payload.has("entry.1943602030")).toBe(false);
+    expect(payload.has("entry.1907540901")).toBe(false);
   });
 });
