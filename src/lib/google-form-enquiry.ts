@@ -4,6 +4,16 @@ export const GOOGLE_FORM_ENDPOINT =
 export const PRIVACY_CONSENT_VALUE =
   "I agree that Blumebyte may use the information I submit to respond to this enquiry in accordance with the Privacy Policy.";
 
+export const GOOGLE_FORM_ENTRY_IDS = {
+  name: "entry.1493348597",
+  email: "entry.1809963150",
+  phone: "entry.1054473153",
+  company: "entry.1755849628",
+  service: "entry.1109077466",
+  message: "entry.758920729",
+  privacy: "entry.1656160953",
+} as const;
+
 export type GoogleFormEnquiry = {
   name: string;
   email: string;
@@ -14,45 +24,19 @@ export type GoogleFormEnquiry = {
   privacyAccepted: boolean;
 };
 
-const entryIds = {
-  name: "entry.1429787837",
-  email: "entry.2086077928",
-  phone: "entry.1789184807",
-  company: "entry.1870899631",
-  service: "entry.975217014",
-  message: "entry.1926531696",
-  privacy: "entry.1907540901",
-} as const;
-
 export function buildGoogleFormPayload(fields: GoogleFormEnquiry) {
   const payload = new URLSearchParams({
-    [entryIds.name]: fields.name.trim(),
-    [entryIds.email]: fields.email.trim(),
-    [entryIds.phone]: fields.phone.trim(),
-    [entryIds.company]: fields.company.trim(),
-    [entryIds.service]: fields.service.trim(),
-    [entryIds.message]: fields.message.trim(),
+    [GOOGLE_FORM_ENTRY_IDS.name]: fields.name.trim(),
+    [GOOGLE_FORM_ENTRY_IDS.email]: fields.email.trim(),
+    [GOOGLE_FORM_ENTRY_IDS.phone]: fields.phone.trim(),
+    [GOOGLE_FORM_ENTRY_IDS.company]: fields.company.trim(),
+    [GOOGLE_FORM_ENTRY_IDS.service]: fields.service.trim(),
+    [GOOGLE_FORM_ENTRY_IDS.message]: fields.message.trim(),
   });
 
   if (fields.privacyAccepted) {
-    payload.set(entryIds.privacy, PRIVACY_CONSENT_VALUE);
+    payload.set(GOOGLE_FORM_ENTRY_IDS.privacy, PRIVACY_CONSENT_VALUE);
   }
 
   return payload;
-}
-
-export async function submitGoogleFormEnquiry(
-  fields: GoogleFormEnquiry,
-  fetchImpl: typeof fetch = fetch,
-) {
-  const payload = buildGoogleFormPayload(fields);
-
-  await fetchImpl(GOOGLE_FORM_ENDPOINT, {
-    method: "POST",
-    mode: "no-cors",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-    },
-    body: payload.toString(),
-  });
 }
