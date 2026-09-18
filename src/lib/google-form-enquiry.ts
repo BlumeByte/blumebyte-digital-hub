@@ -15,13 +15,13 @@ export type GoogleFormEnquiry = {
 };
 
 const entryIds = {
-  name: "entry.1581587491",
-  email: "entry.1694573941",
-  phone: "entry.1509200643",
-  company: "entry.1461596066",
-  service: "entry.727777464",
-  message: "entry.2048585400",
-  privacy: "entry.1943602030",
+  name: "entry.1429787837",
+  email: "entry.2086077928",
+  phone: "entry.1789184807",
+  company: "entry.1870899631",
+  service: "entry.975217014",
+  message: "entry.1926531696",
+  privacy: "entry.1907540901",
 } as const;
 
 export function buildGoogleFormPayload(fields: GoogleFormEnquiry) {
